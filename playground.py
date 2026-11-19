@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # a chave vem do segredo; se ele não existir, o programa pede a chave
-CHAVE = (os.getenv("AI_GATEWAY_API_KEY")
-         or getpass.getpass("Cole sua chave e tecle Enter (ela não aparece na tela): ")).strip()
+CHAVE = os.getenv("AI_GATEWAY_API_KEY")
 URL = "https://api.cloudflare.com/client/v4/accounts/47344dfa13212db01ed347b310738dae/ai/v1/chat/completions"
 MODELO = "@cf/mistralai/mistral-small-3.1-24b-instruct"
 
