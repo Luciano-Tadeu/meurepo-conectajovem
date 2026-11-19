@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 # a chave vem do segredo; se ele não existir, o programa pede a chave
 CHAVE = os.getenv("AI_GATEWAY_API_KEY")
-URL = "https://api.cloudflare.com/client/v4/accounts/47344dfa13212db01ed347b310738dae/ai/v1/chat/completions"
+URL = "https://api.cloudflare.com/client/v4/accounts/dbd1a44c60961118fd29f58ffa0beee2/ai/v1/chat/completions"
 
 INSTRUCAO = """Você é um assistente de estudos.
 Leia o texto do usuário e responda SOMENTE com um JSON neste formato:
