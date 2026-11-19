@@ -38,7 +38,7 @@ margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
 </section>
 <script>
   function atualizar() {
-    fetch('/api/oi')
+    fetch('/api/ola')
       .then(resposta => resposta.json())
       .then(dados => {
         const texto = dados.mensagemns + ' (' + dados.turma + ')';
