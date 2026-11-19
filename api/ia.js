@@ -62,6 +62,7 @@ ${texto}
         { role: 'user', content: mensagemUsuario },
       ],
       temperature: 0.3,
+      max_tokens: 1500,
     }),
   });
 
@@ -74,19 +75,23 @@ ${texto}
     return Response.json({ erro }, { status: 502 });
   }
 
-  // 5. Limpamos o JSON gerado e devolvemos no formato que a página espera
+   // 5. Extraímos o JSON da resposta, mesmo se vier com texto ao redor
   const dados = await resposta.json();
-  const conteudo = dados.choices[0].message.content
-    .replace(/```json|```/g, '')
-    .trim();
+  const bruto = dados.choices[0].message.content;
+  const inicio = bruto.indexOf('{');
+  const fim = bruto.lastIndexOf('}');
+
   try {
-    const json = JSON.parse(conteudo);
+    const json = JSON.parse(bruto.slice(inicio, fim + 1));
     return Response.json({
-      traducao: json.traducao,
+      traducao: json.traducao ?? '',
       tom_usado: json.tom_usado ?? tom,
       erro: json.erro ?? null,
     });
   } catch {
-    return Response.json({ traducao: conteudo, tom_usado: tom, erro: null });
+    return Response.json(
+      { erro: 'A IA respondeu fora do formato esperado. Tente de novo.' },
+      { status: 502 },
+    );
   }
 }
