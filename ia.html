@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resumidor de estudos com IA</title>
+  <title>Tradutor de Idioma com Tons</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #fff7f0; }
     main { max-width: 640px; margin: 0 auto; padding: 24px; }
-    textarea { width: 100%; box-sizing: border-box; padding: 12px; font-size: 16px; }
-    button { margin-top: 12px; padding: 12px 20px; font-size: 16px; border: 0;
-             border-radius: 8px; background: #ee6a33; color: white; }
-    button:disabled { background: #bbb; }
+    textarea, select { width: 100%; box-sizing: border-box; padding: 12px; font-size: 16px; }
+    label { display: block; margin-top: 16px; font-weight: bold; }
+    button { margin-top: 16px; padding: 12px 20px; font-size: 16px; border: 0;
+             border-radius: 8px; background: #ee6a33; color: white; cursor: pointer; }
+    button:disabled { background: #bbb; cursor: default; }
+    .resultado-texto { background: white; border-radius: 8px; padding: 16px; margin-top: 16px; white-space: pre-wrap; }
     .etiqueta { display: inline-block; background: #fce3d3; border-radius: 12px;
                 padding: 4px 10px; margin: 4px 4px 0 0; }
     .aviso { font-size: 13px; color: #777; }
@@ -18,51 +20,87 @@
 </head>
 <body>
   <main>
-    <h1>Resumidor de estudos</h1>
-    <p>Cole um texto e a IA devolve um resumo e as palavras-chave.</p>
+    <h1>Tradutor de Idioma com Tons</h1>
+    <p>Cole um texto, escolha o idioma e o tom, e a IA devolve a tradução.</p>
+
+    <label for="texto">Texto</label>
     <textarea id="texto" rows="8" maxlength="2000"
               placeholder="Cole aqui um texto de até 2.000 caracteres"></textarea>
-    <button id="botao">Resumir com IA</button>
+
+    <label for="idioma">Idioma de destino</label>
+    <select id="idioma">
+      <option value="inglês">Inglês</option>
+      <option value="espanhol">Espanhol</option>
+      <option value="francês">Francês</option>
+      <option value="alemão">Alemão</option>
+      <option value="italiano">Italiano</option>
+      <option value="japonês">Japonês</option>
+      <option value="mandarim">Chinês (mandarim)</option>
+      <option value="russo">Russo</option>
+      <option value="árabe">Árabe</option>
+      <option value="hindi">Hindi</option>
+    </select>
+
+    <label for="tom">Tom</label>
+    <select id="tom">
+      <option value="formal">Formal</option>
+      <option value="informal">Informal</option>
+      <option value="tecnico">Técnico</option>
+    </select>
+
+    <button id="botao">Traduzir com IA</button>
     <div id="resultado"></div>
+
     <p class="aviso">Respostas geradas por inteligência artificial podem conter erros.
       Não envie dados pessoais.</p>
   </main>
+
   <script>
     const botao = document.getElementById('botao');
     const resultado = document.getElementById('resultado');
 
     function mostrar(dados) {
-      resultado.replaceChildren();                // limpa o resultado anterior
-      const resumo = document.createElement('p');
-      resumo.textContent = dados.resumo;          // mostra como texto, com segurança
-      resultado.appendChild(resumo);
-      for (const palavra of dados.palavras_chave || []) {
-        const etiqueta = document.createElement('span');
-        etiqueta.className = 'etiqueta';
-        etiqueta.textContent = palavra;
-        resultado.appendChild(etiqueta);
+      resultado.replaceChildren();
+
+      if (dados.erro) {
+        resultado.textContent = dados.erro;
+        return;
       }
+
+      const traducao = document.createElement('div');
+      traducao.className = 'resultado-texto';
+      traducao.textContent = dados.traducao;
+      resultado.appendChild(traducao);
+
+      const tom = document.createElement('span');
+      tom.className = 'etiqueta';
+      tom.textContent = 'Tom: ' + dados.tom_usado;
+      resultado.appendChild(tom);
     }
 
     botao.addEventListener('click', async () => {
       const texto = document.getElementById('texto').value.trim();
+      const idioma = document.getElementById('idioma').value;
+      const tom = document.getElementById('tom').value;
+
       if (!texto) {
         resultado.textContent = 'Digite ou cole um texto primeiro.';
         return;
       }
-      botao.disabled = true;                      // evita cliques repetidos
-      resultado.textContent = 'Pensando...';
+
+      botao.disabled = true;
+      resultado.textContent = 'Traduzindo...';
       try {
         const resposta = await fetch('/api/ia', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ texto: texto }),
+          body: JSON.stringify({ texto, idioma, tom }),
         });
         const dados = await resposta.json();
         if (resposta.ok) {
           mostrar(dados);
         } else {
-          resultado.textContent = dados.erro;
+          resultado.textContent = dados.erro || 'Algo deu errado. Tente de novo.';
         }
       } catch (erro) {
         resultado.textContent = 'Sem conexão com o servidor. Tente de novo.';

@@ -5,7 +5,7 @@ export default {
       throw new Error('Erro de teste provocado de propósito');
     }
     // lê um valor guardado fora do código (variável de ambiente)
-    const turma = process.env.NOME_DA_TURMA || 'turma ainda não configurada';
+    const turma = 'Turma #2';
     // esta mensagem aparece nos logs da Vercel
     console.log('A função /api/ola foi chamada');
     // devolve a resposta em formato JSON
