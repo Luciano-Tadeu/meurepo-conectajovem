@@ -41,7 +41,7 @@ margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
     fetch('/api/ola')
       .then(resposta => resposta.json())
       .then(dados => {
-        const texto = dados.mensagemns + ' (' + dados.turma + ')';
+        const texto = dados.turma;
         document.getElementById('mensagem').textContent = texto;
         // compara o horário gerado na nuvem (UTC) com o do seu computador
         const nuvem = new Date(dados.horario).toLocaleTimeString('pt-BR', { timeZone: 'UTC' });
